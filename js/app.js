@@ -1,7 +1,7 @@
 /* ==========================================================
    VOLT TRAINING
    app.js — Main Application Controller
-   Version 1.2
+   Version 1.6
    ========================================================== */
 
 import {
@@ -27,9 +27,13 @@ import {
 } from "./programs.js";
 
 import {
-    restoreTimer,
-    stopTimer
+    restoreTimer
 } from "./timers.js";
+
+import {
+    initPlanner,
+    renderPlanner
+} from "./planner.js";
 
 
 /* ==========================================================
@@ -38,7 +42,7 @@ import {
 
 export const VOLT = {
 
-    version: "1.4.0",
+    version: "1.6.0",
 
     state: null,
 
@@ -49,9 +53,13 @@ export const VOLT = {
     screens: [
         "home",
         "workout",
+        "planner",
         "history",
         "programs"
-    ]
+    ],
+
+    // Shared persistence for other modules.
+    saveData
 
 };
 
@@ -72,16 +80,19 @@ async function initializeApp() {
 
     try {
 
-        // Load saved application data
+        // Load saved application data.
         VOLT.state = await loadData();
 
-        // Make application state available to modules
+        // Make application state available to modules.
         window.VOLT = VOLT;
 
-        // Register workout event handlers
+        // Register workout event handlers.
         registerWorkoutHandlers(VOLT);
 
-        // Restore an unfinished workout if necessary
+        // Initialise the activity planner.
+        initPlanner(VOLT);
+
+        // Restore an unfinished workout if necessary.
         if (VOLT.state.activeWorkout) {
 
             resumeWorkout(VOLT);
@@ -90,13 +101,13 @@ async function initializeApp() {
 
         }
 
-        // Render initial application screens
+        // Render initial application screens.
         refreshApp();
 
-        // Show dashboard
+        // Show dashboard.
         showTab("home");
 
-        // Register service worker
+        // Register service worker.
         registerServiceWorker();
 
         VOLT.initialized = true;
@@ -130,29 +141,39 @@ async function initializeApp() {
 export function showTab(screenName) {
 
     if (!VOLT.screens.includes(screenName)) {
-        console.warn("Unknown screen:", screenName);
+
+        console.warn(
+            "Unknown screen:",
+            screenName
+        );
+
         return;
+
     }
 
     VOLT.currentScreen = screenName;
 
-    // Hide all screens
+    // Hide all screens.
     document.querySelectorAll(".screen").forEach(
         screen => {
+
             screen.classList.remove("active");
+
         }
     );
 
-    // Display selected screen
+    // Display selected screen.
     const selectedScreen = document.getElementById(
         screenName
     );
 
     if (selectedScreen) {
+
         selectedScreen.classList.add("active");
+
     }
 
-    // Update navigation buttons
+    // Update navigation buttons.
     document.querySelectorAll(".tab").forEach(
         button => {
 
@@ -172,7 +193,7 @@ export function showTab(screenName) {
         }
     );
 
-    // Focus mode hides bottom navigation
+    // Focus mode hides bottom navigation.
     const focusMode =
         screenName === "workout" &&
         Boolean(VOLT.state?.activeWorkout);
@@ -182,28 +203,42 @@ export function showTab(screenName) {
         focusMode
     );
 
-    // Update selected screen
+    // Update selected screen.
     switch (screenName) {
 
         case "home":
+
             renderDashboard();
+
             break;
 
         case "workout":
+
             renderWorkout(VOLT);
+
+            break;
+
+        case "planner":
+
+            renderPlanner();
+
             break;
 
         case "history":
+
             renderHistory(VOLT);
+
             break;
 
         case "programs":
+
             renderPrograms(VOLT);
+
             break;
 
     }
 
-    // Return to top of screen
+    // Return to top of screen.
     window.scrollTo({
         top: 0,
         behavior: "instant"
@@ -227,40 +262,49 @@ export function renderDashboard() {
     const program = state.program;
 
     if (!program || !program.days?.length) {
+
         renderEmptyDashboard();
+
         return;
+
     }
 
-    const currentDayIndex = state.currentDayIndex ?? 0;
+    const currentDayIndex =
+        state.currentDayIndex ?? 0;
 
-    const currentCycle = state.currentCycle ?? 1;
+    const currentCycle =
+        state.currentCycle ?? 1;
 
-    const currentDay = program.days[currentDayIndex];
+    const currentDay =
+        program.days[currentDayIndex];
 
     if (!currentDay) {
+
         renderEmptyDashboard();
+
         return;
+
     }
 
-    // Current cycle
+    // Current cycle.
     setText(
         "cyclePill",
         `CYCLE ${currentCycle}`
     );
 
-    // Current day
+    // Current day.
     setText(
         "dayIndicator",
         `DAY ${currentDayIndex + 1} OF ${program.days.length}`
     );
 
-    // Next workout name
+    // Next workout name.
     setText(
         "nextName",
         currentDay.name
     );
 
-    // Number of exercises
+    // Number of exercises.
     const exerciseCount =
         currentDay.exercises?.length ?? 0;
 
@@ -269,7 +313,7 @@ export function renderDashboard() {
         `${exerciseCount} exercises · ${program.name}`
     );
 
-    // Statistics
+    // Statistics.
     setText(
         "cyclesDone",
         state.completedCycles ?? 0
@@ -280,13 +324,13 @@ export function renderDashboard() {
         state.history?.length ?? 0
     );
 
-    // Update workout progress
+    // Update workout progress.
     renderCycleProgress();
 
-    // Update upcoming workouts
+    // Update upcoming workouts.
     renderUpcomingWorkouts();
 
-    // Update start button
+    // Update start button.
     updateStartButton();
 
 }
@@ -318,10 +362,24 @@ function renderEmptyDashboard() {
         "Import your first training program."
     );
 
-    const dots = document.getElementById("dots");
+    setText(
+        "cyclesDone",
+        VOLT.state?.completedCycles ?? 0
+    );
+
+    setText(
+        "workoutsDone",
+        VOLT.state?.history?.length ?? 0
+    );
+
+    const dots = document.getElementById(
+        "dots"
+    );
 
     if (dots) {
+
         dots.innerHTML = "";
+
     }
 
     const upcoming = document.getElementById(
@@ -347,7 +405,9 @@ function renderEmptyDashboard() {
         startButton.textContent = "IMPORT PROGRAM";
 
         startButton.onclick = () => {
+
             showTab("programs");
+
         };
 
     }
@@ -361,7 +421,9 @@ function renderEmptyDashboard() {
 
 function renderCycleProgress() {
 
-    const container = document.getElementById("dots");
+    const container = document.getElementById(
+        "dots"
+    );
 
     if (!container) {
         return;
@@ -369,15 +431,31 @@ function renderCycleProgress() {
 
     const state = VOLT.state;
 
-    const totalDays = state.program.days.length;
+    if (!state?.program?.days?.length) {
 
-    const currentIndex = state.currentDayIndex ?? 0;
+        container.innerHTML = "";
+
+        return;
+
+    }
+
+    const totalDays =
+        state.program.days.length;
+
+    const currentIndex =
+        state.currentDayIndex ?? 0;
 
     container.innerHTML = "";
 
-    for (let index = 0; index < totalDays; index++) {
+    for (
+        let index = 0;
+        index < totalDays;
+        index++
+    ) {
 
-        const dot = document.createElement("span");
+        const dot = document.createElement(
+            "span"
+        );
 
         dot.classList.add("dot");
 
@@ -409,24 +487,56 @@ function renderCycleProgress() {
 
 function renderUpcomingWorkouts() {
 
-    const container = document.getElementById("upcoming");
+    const container = document.getElementById(
+        "upcoming"
+    );
 
-    if (!container) return;
+    if (!container) {
+        return;
+    }
 
     const state = VOLT.state;
+
+    if (!state?.program?.days?.length) {
+
+        container.innerHTML = `
+            <div class="empty">
+                No upcoming workouts.
+            </div>
+        `;
+
+        return;
+
+    }
+
     const days = state.program.days;
-    const currentIndex = state.currentDayIndex ?? 0;
+
+    const currentIndex =
+        state.currentDayIndex ?? 0;
 
     container.innerHTML = "";
 
-    for (let offset = 0; offset < days.length; offset++) {
+    for (
+        let offset = 0;
+        offset < days.length;
+        offset++
+    ) {
 
-        const index = (currentIndex + offset) % days.length;
+        const index =
+            (currentIndex + offset) % days.length;
+
         const day = days[index];
 
-        const item = document.createElement("button");
+        const item = document.createElement(
+            "button"
+        );
+
         item.type = "button";
+
         item.className = "workout-item";
+
+        // Reset browser button styles while preserving
+        // the existing workout-item layout.
         item.style.cssText = `
             width: 100%;
             text-align: left;
@@ -441,25 +551,42 @@ function renderUpcomingWorkouts() {
             -webkit-appearance: none;
         `;
 
-        const number = document.createElement("div");
+        const number = document.createElement(
+            "div"
+        );
+
         number.className = "num";
+
         number.textContent = index + 1;
 
-        const details = document.createElement("div");
+        const details = document.createElement(
+            "div"
+        );
 
-        const title = document.createElement("strong");
+        const title = document.createElement(
+            "strong"
+        );
+
         title.textContent = day.name;
 
-        const subtitle = document.createElement("span");
+        const subtitle = document.createElement(
+            "span"
+        );
+
         subtitle.textContent =
             `${day.exercises?.length ?? 0} exercises` +
             (offset === 0 ? " · UP NEXT" : "");
 
         details.appendChild(title);
+
         details.appendChild(subtitle);
 
-        const arrow = document.createElement("span");
+        const arrow = document.createElement(
+            "span"
+        );
+
         arrow.textContent = "›";
+
         arrow.style.cssText = `
             margin-left: auto;
             font-size: 24px;
@@ -467,35 +594,58 @@ function renderUpcomingWorkouts() {
         `;
 
         item.appendChild(number);
+
         item.appendChild(details);
+
         item.appendChild(arrow);
 
-        item.addEventListener("click", () => {
-            openWorkoutPreview(index);
-        });
+        item.addEventListener(
+            "click",
+            () => {
+
+                openWorkoutPreview(index);
+
+            }
+        );
 
         container.appendChild(item);
+
     }
+
 }
 
+
 /* ==========================================================
-   WORKOUT PREVIEW
+   8. WORKOUT PREVIEW
 ========================================================== */
 
 function openWorkoutPreview(dayIndex) {
 
-    const day = VOLT.state?.program?.days?.[dayIndex];
+    const day =
+        VOLT.state?.program?.days?.[dayIndex];
 
-    if (!day) return;
+    if (!day) {
+        return;
+    }
 
     closeWorkoutPreview();
 
-    const overlay = document.createElement("div");
+    const overlay = document.createElement(
+        "div"
+    );
 
     overlay.id = "voltWorkoutPreview";
 
-    overlay.setAttribute("role", "dialog");
-    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute(
+        "role",
+        "dialog"
+    );
+
+    overlay.setAttribute(
+        "aria-modal",
+        "true"
+    );
+
     overlay.setAttribute(
         "aria-label",
         `${day.name} workout preview`
@@ -513,7 +663,9 @@ function openWorkoutPreview(dayIndex) {
         box-sizing: border-box;
     `;
 
-    const panel = document.createElement("div");
+    const panel = document.createElement(
+        "div"
+    );
 
     panel.style.cssText = `
         background: #1b1d21;
@@ -529,7 +681,9 @@ function openWorkoutPreview(dayIndex) {
         box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     `;
 
-    const heading = document.createElement("div");
+    const heading = document.createElement(
+        "div"
+    );
 
     heading.style.cssText = `
         display: flex;
@@ -539,10 +693,17 @@ function openWorkoutPreview(dayIndex) {
         margin-bottom: 20px;
     `;
 
-    const headingText = document.createElement("div");
+    const headingText = document.createElement(
+        "div"
+    );
 
-    const eyebrow = document.createElement("div");
-    eyebrow.textContent = `WORKOUT ${dayIndex + 1}`;
+    const eyebrow = document.createElement(
+        "div"
+    );
+
+    eyebrow.textContent =
+        `WORKOUT ${dayIndex + 1}`;
+
     eyebrow.style.cssText = `
         color: #baff4c;
         font-size: 11px;
@@ -551,20 +712,36 @@ function openWorkoutPreview(dayIndex) {
         margin-bottom: 8px;
     `;
 
-    const title = document.createElement("h2");
+    const title = document.createElement(
+        "h2"
+    );
+
     title.textContent = day.name;
+
     title.style.cssText = `
         font-size: 21px;
         line-height: 1.3;
         margin: 0;
     `;
 
-    headingText.append(eyebrow, title);
+    headingText.append(
+        eyebrow,
+        title
+    );
 
-    const closeButton = document.createElement("button");
+    const closeButton = document.createElement(
+        "button"
+    );
+
     closeButton.type = "button";
+
     closeButton.textContent = "×";
-    closeButton.setAttribute("aria-label", "Close preview");
+
+    closeButton.setAttribute(
+        "aria-label",
+        "Close preview"
+    );
+
     closeButton.style.cssText = `
         background: #303338;
         color: white;
@@ -577,12 +754,19 @@ function openWorkoutPreview(dayIndex) {
         flex-shrink: 0;
     `;
 
-    closeButton.addEventListener("click", closeWorkoutPreview);
+    closeButton.addEventListener(
+        "click",
+        closeWorkoutPreview
+    );
 
-    heading.append(headingText, closeButton);
+    heading.append(
+        headingText,
+        closeButton
+    );
+
     panel.appendChild(heading);
 
-    // Warm-up section
+    // Warm-up section.
     if (day.warmup?.length) {
 
         panel.appendChild(
@@ -591,9 +775,10 @@ function openWorkoutPreview(dayIndex) {
                 day.warmup
             )
         );
+
     }
 
-    // Main workout section
+    // Main workout section.
     if (day.exercises?.length) {
 
         panel.appendChild(
@@ -602,15 +787,23 @@ function openWorkoutPreview(dayIndex) {
                 day.exercises
             )
         );
+
     }
 
     overlay.appendChild(panel);
 
-    overlay.addEventListener("click", event => {
-        if (event.target === overlay) {
-            closeWorkoutPreview();
+    overlay.addEventListener(
+        "click",
+        event => {
+
+            if (event.target === overlay) {
+
+                closeWorkoutPreview();
+
+            }
+
         }
-    });
+    );
 
     document.body.appendChild(overlay);
 
@@ -618,16 +811,30 @@ function openWorkoutPreview(dayIndex) {
         "keydown",
         handlePreviewEscape
     );
+
+    closeButton.focus();
+
 }
 
 
-function createPreviewSection(label, exercises) {
+/* ==========================================================
+   9. WORKOUT PREVIEW SECTIONS
+========================================================== */
 
-    const section = document.createElement("section");
+function createPreviewSection(
+    label,
+    exercises
+) {
+
+    const section = document.createElement(
+        "section"
+    );
 
     section.style.marginBottom = "22px";
 
-    const heading = document.createElement("h3");
+    const heading = document.createElement(
+        "h3"
+    );
 
     heading.textContent = label;
 
@@ -641,88 +848,131 @@ function createPreviewSection(label, exercises) {
 
     section.appendChild(heading);
 
-    exercises.forEach((exercise, index) => {
+    exercises.forEach(
+        (exercise, index) => {
 
-        const row = document.createElement("div");
+            const row = document.createElement(
+                "div"
+            );
 
-        row.style.cssText = `
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 11px 0;
-            border-bottom: 1px solid #33363b;
-        `;
+            row.style.cssText = `
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 11px 0;
+                border-bottom: 1px solid #33363b;
+            `;
 
-        const number = document.createElement("span");
+            const number = document.createElement(
+                "span"
+            );
 
-        number.textContent = String(index + 1).padStart(2, "0");
+            number.textContent =
+                String(index + 1).padStart(2, "0");
 
-        number.style.cssText = `
-            color: #81868c;
-            font-size: 12px;
-            font-weight: 700;
-            min-width: 24px;
-            padding-top: 3px;
-        `;
+            number.style.cssText = `
+                color: #81868c;
+                font-size: 12px;
+                font-weight: 700;
+                min-width: 24px;
+                padding-top: 3px;
+            `;
 
-        const details = document.createElement("div");
+            const details = document.createElement(
+                "div"
+            );
 
-        const name = document.createElement("div");
+            const name = document.createElement(
+                "div"
+            );
 
-        name.textContent = exercise.name;
+            name.textContent = exercise.name;
 
-        name.style.cssText = `
-            font-size: 14px;
-            font-weight: 600;
-            line-height: 1.4;
-        `;
+            name.style.cssText = `
+                font-size: 14px;
+                font-weight: 600;
+                line-height: 1.4;
+            `;
 
-        const prescription = document.createElement("div");
+            const prescription = document.createElement(
+                "div"
+            );
 
-        const sets = exercise.sets ?? 1;
-        const reps = exercise.reps ?? "—";
+            const sets =
+                exercise.sets ?? 1;
 
-        prescription.textContent =
-            `${sets} × ${reps}` +
-            (exercise.type === "time" ? " sec" : "") +
-            (exercise.perSide ? " / side" : "");
+            const reps =
+                exercise.reps ?? "—";
 
-        prescription.style.cssText = `
-            color: #a5a9ae;
-            font-size: 12px;
-            margin-top: 4px;
-        `;
+            prescription.textContent =
+                `${sets} × ${reps}` +
+                (
+                    exercise.type === "time"
+                        ? " sec"
+                        : ""
+                ) +
+                (
+                    exercise.perSide
+                        ? " / side"
+                        : ""
+                );
 
-        details.append(name, prescription);
-        row.append(number, details);
-        section.appendChild(row);
-    });
+            prescription.style.cssText = `
+                color: #a5a9ae;
+                font-size: 12px;
+                margin-top: 4px;
+            `;
+
+            details.append(
+                name,
+                prescription
+            );
+
+            row.append(
+                number,
+                details
+            );
+
+            section.appendChild(row);
+
+        }
+    );
 
     return section;
+
 }
 
+
+/* ==========================================================
+   10. CLOSE WORKOUT PREVIEW
+========================================================== */
 
 function handlePreviewEscape(event) {
 
     if (event.key === "Escape") {
-        closeWorkoutPreview();
-    }
-}
 
+        closeWorkoutPreview();
+
+    }
+
+}
 
 function closeWorkoutPreview() {
 
-    document.getElementById("voltWorkoutPreview")?.remove();
+    document.getElementById(
+        "voltWorkoutPreview"
+    )?.remove();
 
     document.removeEventListener(
         "keydown",
         handlePreviewEscape
     );
+
 }
 
 
 /* ==========================================================
-   8. START / RESUME BUTTON
+   11. START / RESUME BUTTON
 ========================================================== */
 
 function updateStartButton() {
@@ -740,11 +990,13 @@ function updateStartButton() {
 
     if (activeWorkout) {
 
-        button.textContent = "▶ RESUME WORKOUT";
+        button.textContent =
+            "▶ RESUME WORKOUT";
 
     } else {
 
-        button.textContent = "▶ START WORKOUT";
+        button.textContent =
+            "▶ START WORKOUT";
 
     }
 
@@ -754,7 +1006,7 @@ function updateStartButton() {
 
 
 /* ==========================================================
-   9. START WORKOUT
+   12. START WORKOUT
 ========================================================== */
 
 export function handleStartWorkout() {
@@ -783,10 +1035,14 @@ export function handleStartWorkout() {
 
 
 /* ==========================================================
-   10. REFRESH APPLICATION
+   13. REFRESH APPLICATION
 ========================================================== */
 
 export function refreshApp() {
+
+    if (!VOLT.state) {
+        return;
+    }
 
     renderDashboard();
 
@@ -794,11 +1050,13 @@ export function refreshApp() {
 
     renderPrograms(VOLT);
 
+    renderPlanner();
+
 }
 
 
 /* ==========================================================
-   11. SAVE APPLICATION STATE
+   14. SAVE APPLICATION STATE
 ========================================================== */
 
 export async function persistState() {
@@ -814,7 +1072,7 @@ export async function persistState() {
     } catch (error) {
 
         console.error(
-            "Failed to save workout data:",
+            "Failed to save VOLT data:",
             error
         );
 
@@ -831,7 +1089,7 @@ export async function persistState() {
 
 
 /* ==========================================================
-   12. APPLICATION ERROR MESSAGE
+   15. APPLICATION ERROR MESSAGE
 ========================================================== */
 
 function showAppError(message) {
@@ -842,7 +1100,9 @@ function showAppError(message) {
 
     if (!errorBox) {
 
-        errorBox = document.createElement("div");
+        errorBox = document.createElement(
+            "div"
+        );
 
         errorBox.id = "appError";
 
@@ -879,7 +1139,7 @@ function showAppError(message) {
 
 
 /* ==========================================================
-   13. TEXT HELPER
+   16. TEXT HELPER
 ========================================================== */
 
 function setText(elementId, value) {
@@ -889,14 +1149,16 @@ function setText(elementId, value) {
     );
 
     if (element) {
+
         element.textContent = value;
+
     }
 
 }
 
 
 /* ==========================================================
-   14. SERVICE WORKER REGISTRATION
+   17. SERVICE WORKER REGISTRATION
 ========================================================== */
 
 async function registerServiceWorker() {
@@ -933,7 +1195,7 @@ async function registerServiceWorker() {
 
 
 /* ==========================================================
-   15. HANDLE APP VISIBILITY
+   18. HANDLE APP VISIBILITY
 ========================================================== */
 
 document.addEventListener(
@@ -944,15 +1206,33 @@ document.addEventListener(
             return;
         }
 
-        if (document.visibilityState === "visible") {
+        if (
+            document.visibilityState === "visible"
+        ) {
 
-            // Recalculate timer after background suspension
+            // Recalculate timers after background suspension.
             restoreTimer(VOLT);
 
-            // Refresh current screen
-            if (VOLT.currentScreen === "workout") {
+            // Refresh the current screen.
+            switch (VOLT.currentScreen) {
 
-                renderWorkout(VOLT);
+                case "workout":
+
+                    renderWorkout(VOLT);
+
+                    break;
+
+                case "planner":
+
+                    renderPlanner();
+
+                    break;
+
+                case "home":
+
+                    renderDashboard();
+
+                    break;
 
             }
 
@@ -963,7 +1243,7 @@ document.addEventListener(
 
 
 /* ==========================================================
-   16. HANDLE PAGE EXIT
+   19. HANDLE PAGE EXIT
 ========================================================== */
 
 window.addEventListener(
@@ -982,27 +1262,31 @@ window.addEventListener(
 
 
 /* ==========================================================
-   17. GLOBAL HTML EVENT HANDLERS
+   20. GLOBAL HTML EVENT HANDLERS
 ========================================================== */
 
-// Temporary compatibility with index.html inline handlers.
-// We'll remove these when all modules are complete.
+// Compatibility with index.html inline handlers.
 
 window.showTab = showTab;
 
 window.startWorkout = handleStartWorkout;
 
 window.exportCSV = () => {
+
     exportCSV(VOLT.state);
+
 };
 
 window.exportJSON = () => {
+
     exportJSON(VOLT.state);
+
 };
 
 window.restoreBackup = async (event) => {
 
-    const restoredState = await restoreBackup(event);
+    const restoredState =
+        await restoreBackup(event);
 
     if (restoredState) {
 
@@ -1028,7 +1312,7 @@ window.loadCSV = loadCSV;
 
 
 /* ==========================================================
-   18. START APPLICATION
+   21. START APPLICATION
 ========================================================== */
 
 document.addEventListener(

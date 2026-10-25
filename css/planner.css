@@ -1,0 +1,456 @@
+/* ==========================================================
+   VOLT PLANNER
+   Version 1.6
+========================================================== */
+
+:root {
+    --planner-strength: #baff4c;
+    --planner-yoga: #53e6ee;
+    --planner-bjj: #b99bff;
+    --planner-other: #ffb66a;
+    --planner-sauna: #ff7f91;
+}
+
+/* GENERAL */
+
+.planner-intro {
+    margin-bottom: 25px;
+}
+
+.planner-calendar-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 16px 12px 18px;
+}
+
+/* MONTH NAVIGATION */
+
+.planner-month-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.planner-month-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.planner-month-arrow {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--card-light);
+    color: var(--text);
+    font-size: 30px;
+}
+
+/* CALENDAR GRID */
+
+.planner-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 3px;
+}
+
+.planner-weekday {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--muted);
+    padding-bottom: 12px;
+}
+
+.planner-day {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 7px;
+
+    min-width: 0;
+    min-height: 57px;
+    padding: 9px 1px 5px;
+
+    border: 1px solid transparent;
+    border-radius: 11px;
+    background: transparent;
+
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.planner-day.outside {
+    opacity: 0.28;
+}
+
+.planner-day.today {
+    color: var(--lime);
+}
+
+.planner-day.selected {
+    background: #252e38;
+    border-color: #475664;
+}
+
+.planner-day.today.selected {
+    border-color: var(--lime);
+}
+
+/* ACTIVITY DOTS */
+
+.planner-dots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+    min-height: 8px;
+}
+
+.planner-dot {
+    display: inline-block;
+    flex-shrink: 0;
+
+    width: 7px;
+    height: 7px;
+
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+
+    background: transparent;
+}
+
+.planner-dot.solid {
+    background: currentColor;
+}
+
+.planner-dot.strength {
+    color: var(--planner-strength);
+}
+
+.planner-dot.yoga {
+    color: var(--planner-yoga);
+}
+
+.planner-dot.bjj {
+    color: var(--planner-bjj);
+}
+
+.planner-dot.other {
+    color: var(--planner-other);
+}
+
+.planner-dot.sauna {
+    color: var(--planner-sauna);
+}
+
+/* TODAY BUTTON */
+
+.planner-today-button {
+    display: block;
+    margin: 18px auto 0;
+    padding: 8px 16px;
+
+    border: 1px solid var(--line-light);
+    border-radius: 30px;
+
+    background: transparent;
+    color: var(--muted);
+
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+/* LEGEND */
+
+.planner-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 9px 14px;
+
+    margin: 19px 0 30px;
+
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.planner-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* SELECTED DAY */
+
+.planner-day-section {
+    margin-top: 20px;
+}
+
+.planner-day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 15px;
+}
+
+.planner-day-header h2 {
+    font-size: 19px;
+    margin: 7px 0 0;
+}
+
+.planner-add-button {
+    flex-shrink: 0;
+
+    padding: 11px 15px;
+
+    border: 1px solid #526e31;
+    border-radius: 11px;
+
+    background: #263520;
+    color: var(--lime);
+
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.planner-empty {
+    padding: 22px 12px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* ACTIVITY ROWS */
+
+.planner-entry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 15px 12px;
+
+    border-bottom: 1px solid var(--line);
+}
+
+.planner-entry-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.planner-entry-details strong {
+    display: block;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.planner-entry-details span {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    overflow-wrap: anywhere;
+}
+
+.planner-entry-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.planner-action,
+.planner-edit {
+    min-width: 35px;
+    min-height: 35px;
+
+    border: 1px solid var(--line-light);
+    border-radius: 9px;
+
+    background: var(--card-light);
+    color: var(--text);
+}
+
+.planner-action.complete {
+    color: var(--lime);
+}
+
+.planner-edit {
+    padding: 0 8px;
+    font-size: 11px;
+}
+
+/* EDITOR */
+
+.planner-editor {
+    margin-top: 18px;
+    padding: 20px;
+
+    background: var(--card);
+    border: 1px solid var(--line-light);
+    border-radius: 19px;
+}
+
+.planner-editor[hidden] {
+    display: none;
+}
+
+.planner-editor .eyebrow {
+    margin-bottom: 18px;
+    color: var(--lime);
+}
+
+.planner-editor label {
+    display: block;
+    margin: 16px 0 7px;
+
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--muted);
+}
+
+.planner-editor input,
+.planner-editor select {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+
+    padding: 12px;
+
+    background: var(--card-light);
+    border: 1px solid var(--line-light);
+    border-radius: 11px;
+
+    color: var(--text);
+    font-size: 16px;
+}
+
+.planner-editor .primary {
+    margin-top: 23px;
+}
+
+.planner-editor .secondary {
+    margin-top: 9px;
+}
+
+.planner-delete-button {
+    display: block;
+    margin: 20px auto 0;
+    padding: 10px;
+
+    background: transparent;
+    border: none;
+    color: #ff7f91;
+
+    font-size: 12px;
+}
+
+/* SUMMARIES */
+
+.planner-summaries {
+    margin-top: 35px;
+}
+
+.planner-summary-panel {
+    margin-bottom: 12px;
+
+    border: 1px solid var(--line);
+    border-radius: 15px;
+
+    background: var(--card);
+}
+
+.planner-summary-panel summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 18px;
+    cursor: pointer;
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+
+    list-style: none;
+}
+
+.planner-summary-panel summary::-webkit-details-marker {
+    display: none;
+}
+
+.planner-summary-panel summary span {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+.planner-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 7px;
+
+    padding: 0 14px 16px;
+}
+
+.planner-summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+
+    text-align: center;
+}
+
+.planner-summary-item strong {
+    font-size: 23px;
+}
+
+.planner-summary-item span {
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.planner-summary-footer {
+    grid-column: 1 / -1;
+    margin: 12px 0 0;
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+}
+
+/* FIVE NAVIGATION TABS */
+
+.tabs-inner .tab {
+    font-size: 9px;
+    letter-spacing: 0;
+}
+
+.tabs-inner .tab .icon {
+    font-size: 21px;
+}
+
+@media (max-width: 360px) {
+    .planner-calendar-card {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .planner-day {
+        min-height: 54px;
+    }
+
+    .planner-summary-grid {
+        gap: 3px;
+    }
+}

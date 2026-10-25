@@ -99,6 +99,8 @@
         href="./css/workout.css"
     />
 
+    <link rel="stylesheet" href="./css/planner.css" />
+
 </head>
 
 <body>
@@ -302,7 +304,239 @@
 
         </section>
 
+<!-- ========================================
+     VOLT PLANNER
+========================================= -->
 
+<section class="screen" id="planner">
+
+    <div class="eyebrow">
+        SHOW UP FOR YOURSELF
+    </div>
+
+    <h1>
+        Your
+        <span class="accent">consistency.</span>
+    </h1>
+
+    <p class="planner-intro">
+        Plan your movement. Celebrate showing up.
+    </p>
+
+    <!-- CALENDAR -->
+
+    <div class="planner-calendar-card">
+
+        <div class="planner-month-header">
+
+            <button
+                class="planner-month-arrow"
+                id="plannerPrev"
+                aria-label="Previous month"
+            >‹</button>
+
+            <h2 id="plannerMonth"></h2>
+
+            <button
+                class="planner-month-arrow"
+                id="plannerNext"
+                aria-label="Next month"
+            >›</button>
+
+        </div>
+
+        <div
+            class="planner-calendar"
+            id="plannerCalendar"
+        ></div>
+
+        <button
+            class="planner-today-button"
+            id="plannerToday"
+        >
+            TODAY
+        </button>
+
+    </div>
+
+    <!-- COLOUR LEGEND -->
+
+    <div class="planner-legend">
+
+        <span><i class="planner-dot strength solid"></i> Strength</span>
+        <span><i class="planner-dot yoga solid"></i> Yoga</span>
+        <span><i class="planner-dot bjj solid"></i> BJJ</span>
+        <span><i class="planner-dot other solid"></i> Other</span>
+        <span><i class="planner-dot sauna solid"></i> Sauna</span>
+
+    </div>
+
+    <!-- SELECTED DAY -->
+
+    <div class="planner-day-section">
+
+        <div class="planner-day-header">
+
+            <div>
+                <div class="eyebrow">SELECTED DAY</div>
+                <h2 id="plannerSelectedDate"></h2>
+            </div>
+
+            <button
+                class="planner-add-button"
+                id="plannerAdd"
+            >
+                + ADD
+            </button>
+
+        </div>
+
+        <div id="plannerDayEntries"></div>
+
+    </div>
+
+    <!-- ACTIVITY EDITOR -->
+
+    <div
+        class="planner-editor"
+        id="plannerEditor"
+        hidden
+    >
+
+        <div
+            class="eyebrow"
+            id="plannerEditorTitle"
+        >
+            ADD ACTIVITY
+        </div>
+
+        <form id="plannerForm">
+
+            <label for="plannerType">
+                ACTIVITY
+            </label>
+
+            <select id="plannerType">
+
+                <option value="strength">
+                    Weight training
+                </option>
+
+                <option value="yoga">
+                    Yoga
+                </option>
+
+                <option value="bjj">
+                    BJJ
+                </option>
+
+                <option value="other">
+                    Other
+                </option>
+
+                <option value="sauna">
+                    Sauna
+                </option>
+
+            </select>
+
+            <div id="plannerExtra" hidden>
+
+                <label for="plannerEntryName">
+                    NAME
+                </label>
+
+                <input
+                    id="plannerEntryName"
+                    type="text"
+                    maxlength="100"
+                    placeholder="Activity name"
+                />
+
+                <label for="plannerEntryTime">
+                    TIME
+                </label>
+
+                <input
+                    id="plannerEntryTime"
+                    type="time"
+                />
+
+                <label for="plannerEntryPlace">
+                    PLACE
+                </label>
+
+                <input
+                    id="plannerEntryPlace"
+                    type="text"
+                    maxlength="120"
+                    placeholder="Optional"
+                />
+
+            </div>
+
+            <button
+                type="submit"
+                class="primary"
+            >
+                SAVE ACTIVITY
+            </button>
+
+            <button
+                type="button"
+                class="secondary full-width"
+                id="plannerCancel"
+            >
+                CANCEL
+            </button>
+
+            <button
+                type="button"
+                class="planner-delete-button"
+                id="plannerDelete"
+                hidden
+            >
+                DELETE ACTIVITY
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- SUMMARIES -->
+
+    <div class="planner-summaries">
+
+        <details class="planner-summary-panel">
+
+            <summary>
+                WEEKLY SUMMARY
+                <span id="plannerWeekLabel"></span>
+            </summary>
+
+            <div
+                class="planner-summary-grid"
+                id="plannerWeekSummary"
+            ></div>
+
+        </details>
+
+        <details class="planner-summary-panel">
+
+            <summary>
+                MONTHLY SUMMARY
+            </summary>
+
+            <div
+                class="planner-summary-grid"
+                id="plannerMonthSummary"
+            ></div>
+
+        </details>
+
+    </div>
+
+</section>
 
         <!-- ========================================
              HISTORY SCREEN
@@ -637,7 +871,22 @@
 
             </button>
 
+            <!-- PLANNER -->
 
+            <button
+                class="tab"
+                data-tab="planner"
+                onclick="showTab('planner')"
+            >
+                <span class="icon">
+                    ▦
+                </span>
+
+                <span>
+                    PLANNER
+                </span>
+            </button>
+            
             <!-- HISTORY -->
 
             <button

@@ -4,7 +4,7 @@
    Version 1.5
    ========================================================== */
 
-const CACHE_VERSION = "volt-v1.5.0";
+const CACHE_VERSION = "volt-v1.6.0";
 
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
@@ -20,7 +20,9 @@ const APP_FILES = [
     "./js/storage.js",
     "./js/timers.js",
     "./data/default-program.json",
-    "./manifest.json"
+    "./manifest.json",
+    "./css/planner.css",
+    "./js/planner.js",
 ];
 
 /* ==========================================================

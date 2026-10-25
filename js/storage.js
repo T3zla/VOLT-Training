@@ -38,6 +38,8 @@ function createDefaultState() {
 
         history: [],
 
+        plannerEntries[],
+
         settings: {
             defaultRest: 90,
             weightUnit: "kg",
@@ -279,6 +281,12 @@ function normalizeState(data) {
             "Unsupported VOLT storage version."
         );
 
+    }
+
+    // Planner data: support existing VOLT installations.
+
+    if (!Array.isArray(state.plannerEntries)) {
+        state.plannerEntries = [];
     }
 
     // Validate history
