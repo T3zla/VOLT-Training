@@ -409,66 +409,315 @@ function renderCycleProgress() {
 
 function renderUpcomingWorkouts() {
 
-    const container = document.getElementById(
-        "upcoming"
-    );
+    const container = document.getElementById("upcoming");
 
-    if (!container) {
-        return;
-    }
+    if (!container) return;
 
     const state = VOLT.state;
-
     const days = state.program.days;
-
     const currentIndex = state.currentDayIndex ?? 0;
 
     container.innerHTML = "";
 
-    // Display the next workouts in rotation
     for (let offset = 0; offset < days.length; offset++) {
 
-        const index = (
-            currentIndex + offset
-        ) % days.length;
-
+        const index = (currentIndex + offset) % days.length;
         const day = days[index];
 
-        const item = document.createElement("div");
-
+        const item = document.createElement("button");
+        item.type = "button";
         item.className = "workout-item";
+        item.style.cssText = `
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            color: inherit;
+            font: inherit;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            appearance: none;
+            -webkit-appearance: none;
+        `;
 
         const number = document.createElement("div");
-
         number.className = "num";
-
         number.textContent = index + 1;
 
         const details = document.createElement("div");
 
         const title = document.createElement("strong");
-
         title.textContent = day.name;
 
         const subtitle = document.createElement("span");
-
-        const exerciseCount =
-            day.exercises?.length ?? 0;
-
         subtitle.textContent =
-            `${exerciseCount} exercises` +
+            `${day.exercises?.length ?? 0} exercises` +
             (offset === 0 ? " · UP NEXT" : "");
 
         details.appendChild(title);
         details.appendChild(subtitle);
 
+        const arrow = document.createElement("span");
+        arrow.textContent = "›";
+        arrow.style.cssText = `
+            margin-left: auto;
+            font-size: 24px;
+            opacity: 0.65;
+        `;
+
         item.appendChild(number);
         item.appendChild(details);
+        item.appendChild(arrow);
+
+        item.addEventListener("click", () => {
+            openWorkoutPreview(index);
+        });
 
         container.appendChild(item);
+    }
+}
 
+/* ==========================================================
+   WORKOUT PREVIEW
+========================================================== */
+
+function openWorkoutPreview(dayIndex) {
+
+    const day = VOLT.state?.program?.days?.[dayIndex];
+
+    if (!day) return;
+
+    closeWorkoutPreview();
+
+    const overlay = document.createElement("div");
+
+    overlay.id = "voltWorkoutPreview";
+
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute(
+        "aria-label",
+        `${day.name} workout preview`
+    );
+
+    overlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.85);
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 12px;
+        box-sizing: border-box;
+    `;
+
+    const panel = document.createElement("div");
+
+    panel.style.cssText = `
+        background: #1b1d21;
+        color: #ffffff;
+        width: 100%;
+        max-width: 520px;
+        max-height: 88dvh;
+        overflow-y: auto;
+        border: 1px solid #3a3d42;
+        border-radius: 20px;
+        padding: 22px;
+        box-sizing: border-box;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    `;
+
+    const heading = document.createElement("div");
+
+    heading.style.cssText = `
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 20px;
+    `;
+
+    const headingText = document.createElement("div");
+
+    const eyebrow = document.createElement("div");
+    eyebrow.textContent = `WORKOUT ${dayIndex + 1}`;
+    eyebrow.style.cssText = `
+        color: #baff4c;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+    `;
+
+    const title = document.createElement("h2");
+    title.textContent = day.name;
+    title.style.cssText = `
+        font-size: 21px;
+        line-height: 1.3;
+        margin: 0;
+    `;
+
+    headingText.append(eyebrow, title);
+
+    const closeButton = document.createElement("button");
+    closeButton.type = "button";
+    closeButton.textContent = "×";
+    closeButton.setAttribute("aria-label", "Close preview");
+    closeButton.style.cssText = `
+        background: #303338;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        width: 36px;
+        height: 36px;
+        font-size: 25px;
+        cursor: pointer;
+        flex-shrink: 0;
+    `;
+
+    closeButton.addEventListener("click", closeWorkoutPreview);
+
+    heading.append(headingText, closeButton);
+    panel.appendChild(heading);
+
+    // Warm-up section
+    if (day.warmup?.length) {
+
+        panel.appendChild(
+            createPreviewSection(
+                "WARM-UP",
+                day.warmup
+            )
+        );
     }
 
+    // Main workout section
+    if (day.exercises?.length) {
+
+        panel.appendChild(
+            createPreviewSection(
+                "MAIN WORKOUT",
+                day.exercises
+            )
+        );
+    }
+
+    overlay.appendChild(panel);
+
+    overlay.addEventListener("click", event => {
+        if (event.target === overlay) {
+            closeWorkoutPreview();
+        }
+    });
+
+    document.body.appendChild(overlay);
+
+    document.addEventListener(
+        "keydown",
+        handlePreviewEscape
+    );
+}
+
+
+function createPreviewSection(label, exercises) {
+
+    const section = document.createElement("section");
+
+    section.style.marginBottom = "22px";
+
+    const heading = document.createElement("h3");
+
+    heading.textContent = label;
+
+    heading.style.cssText = `
+        color: #baff4c;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        margin: 0 0 12px;
+    `;
+
+    section.appendChild(heading);
+
+    exercises.forEach((exercise, index) => {
+
+        const row = document.createElement("div");
+
+        row.style.cssText = `
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 11px 0;
+            border-bottom: 1px solid #33363b;
+        `;
+
+        const number = document.createElement("span");
+
+        number.textContent = String(index + 1).padStart(2, "0");
+
+        number.style.cssText = `
+            color: #81868c;
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 24px;
+            padding-top: 3px;
+        `;
+
+        const details = document.createElement("div");
+
+        const name = document.createElement("div");
+
+        name.textContent = exercise.name;
+
+        name.style.cssText = `
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.4;
+        `;
+
+        const prescription = document.createElement("div");
+
+        const sets = exercise.sets ?? 1;
+        const reps = exercise.reps ?? "—";
+
+        prescription.textContent =
+            `${sets} × ${reps}` +
+            (exercise.type === "time" ? " sec" : "") +
+            (exercise.perSide ? " / side" : "");
+
+        prescription.style.cssText = `
+            color: #a5a9ae;
+            font-size: 12px;
+            margin-top: 4px;
+        `;
+
+        details.append(name, prescription);
+        row.append(number, details);
+        section.appendChild(row);
+    });
+
+    return section;
+}
+
+
+function handlePreviewEscape(event) {
+
+    if (event.key === "Escape") {
+        closeWorkoutPreview();
+    }
+}
+
+
+function closeWorkoutPreview() {
+
+    document.getElementById("voltWorkoutPreview")?.remove();
+
+    document.removeEventListener(
+        "keydown",
+        handlePreviewEscape
+    );
 }
 
 
