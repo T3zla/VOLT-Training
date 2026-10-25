@@ -1,0 +1,849 @@
+/* ==========================================================
+   VOLT TRAINING
+   styles.css — Global Application Styles
+   Version 1.2
+   ========================================================== */
+
+
+/* ----------------------------------------------------------
+   1. DESIGN SYSTEM
+---------------------------------------------------------- */
+
+:root {
+    color-scheme: dark;
+
+    /* Backgrounds */
+    --bg: #090c11;
+    --surface: #10151d;
+    --card: #151b24;
+    --card-light: #1b2330;
+    --input-bg: #242e3b;
+
+    /* Accent colours */
+    --lime: #baff4c;
+    --cyan: #53e6ee;
+    --purple: #b99bff;
+    --orange: #ffb66a;
+
+    /* Typography */
+    --text: #f5f7f9;
+    --muted: #929ba9;
+    --text-secondary: #b8c4d0;
+
+    /* Borders */
+    --line: #29313e;
+    --line-light: #394657;
+
+    /* Border radii */
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 19px;
+    --radius-xl: 25px;
+
+    /* Shadows */
+    --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.2);
+
+    /* Layout */
+    --app-width: 540px;
+    --nav-height: 78px;
+
+    /* iPhone safe areas */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+
+/* ----------------------------------------------------------
+   2. RESET & GLOBAL STYLES
+---------------------------------------------------------- */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    background: var(--bg);
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    background: var(--bg);
+    color: var(--text);
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Segoe UI",
+        sans-serif;
+
+    font-size: 15px;
+    line-height: 1.5;
+
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--lime);
+    outline-offset: 3px;
+}
+
+a {
+    color: var(--cyan);
+    text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+    margin-top: 0;
+}
+
+h1 {
+    font-size: clamp(30px, 8vw, 38px);
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    font-weight: 850;
+    margin: 12px 0 15px;
+}
+
+h2 {
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: -0.5px;
+    font-weight: 800;
+    margin-bottom: 17px;
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: 750;
+}
+
+p {
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+::selection {
+    background: var(--lime);
+    color: var(--bg);
+}
+
+
+/* ----------------------------------------------------------
+   3. APPLICATION SHELL
+---------------------------------------------------------- */
+
+.shell {
+    width: 100%;
+    max-width: var(--app-width);
+
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    margin: 0 auto;
+
+    padding:
+        calc(24px + var(--safe-top))
+        20px
+        calc(115px + var(--safe-bottom));
+}
+
+
+/* ----------------------------------------------------------
+   4. HEADER & BRANDING
+---------------------------------------------------------- */
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+
+    margin-bottom: 31px;
+}
+
+.brand {
+    display: flex;
+    flex-direction: column;
+
+    font-size: 27px;
+    font-weight: 950;
+    letter-spacing: 3px;
+    line-height: 1;
+}
+
+.brand i {
+    color: var(--lime);
+    font-style: normal;
+}
+
+.brand-subtitle {
+    margin-top: 7px;
+
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2.2px;
+
+    color: var(--muted);
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+
+    white-space: nowrap;
+
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+
+    color: var(--lime);
+
+    background: rgba(186, 255, 76, 0.06);
+    border: 1px solid #526e31;
+    border-radius: 30px;
+
+    padding: 9px 12px;
+}
+
+
+/* ----------------------------------------------------------
+   5. TYPOGRAPHY UTILITIES
+---------------------------------------------------------- */
+
+.eyebrow {
+    text-transform: uppercase;
+
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+
+    color: var(--muted);
+}
+
+.accent {
+    color: var(--lime);
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.small {
+    font-size: 12px;
+}
+
+.big {
+    font-size: 30px;
+    font-weight: 850;
+    letter-spacing: -1px;
+    line-height: 1.2;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.full-width {
+    display: block;
+    width: 100%;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+
+/* ----------------------------------------------------------
+   6. SCREEN NAVIGATION
+---------------------------------------------------------- */
+
+.screen {
+    display: none;
+    animation: screenFade 0.2s ease-out;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes screenFade {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ----------------------------------------------------------
+   7. HOME HERO CARD
+---------------------------------------------------------- */
+
+.hero {
+    position: relative;
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 90% 5%,
+            rgba(90, 130, 64, 0.35),
+            transparent 50%
+        ),
+        linear-gradient(
+            145deg,
+            #1d2731,
+            #121921
+        );
+
+    border: 1px solid #37443c;
+    border-radius: var(--radius-xl);
+
+    padding: 23px;
+    margin: 25px 0;
+
+    box-shadow: var(--shadow-card);
+}
+
+.hero h2 {
+    font-size: 28px;
+    margin: 10px 0;
+}
+
+.hero-label {
+    margin-top: 26px;
+}
+
+.pill {
+    display: inline-block;
+
+    padding: 7px 11px;
+
+    border-radius: 50px;
+
+    background: #33412d;
+    color: var(--lime);
+
+    font-size: 11px;
+    font-weight: 850;
+    letter-spacing: 1px;
+}
+
+
+/* ----------------------------------------------------------
+   8. WORKOUT CYCLE INDICATORS
+---------------------------------------------------------- */
+
+.dots {
+    display: flex;
+    gap: 8px;
+
+    margin: 22px 0;
+}
+
+.dot {
+    flex: 1;
+    height: 7px;
+
+    border-radius: 5px;
+    background: #38434c;
+
+    transition: background 0.2s ease;
+}
+
+.dot.done {
+    background: var(--lime);
+}
+
+.dot.current {
+    background: var(--cyan);
+}
+
+
+/* ----------------------------------------------------------
+   9. BUTTONS
+---------------------------------------------------------- */
+
+.primary {
+    display: block;
+    width: 100%;
+
+    min-height: 54px;
+
+    padding: 16px 20px;
+
+    border: none;
+    border-radius: var(--radius-md);
+
+    background: var(--lime);
+    color: #101510;
+
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+
+    text-align: center;
+
+    transition:
+        transform 0.12s ease,
+        background 0.15s ease;
+}
+
+.primary:active {
+    transform: scale(0.98);
+    background: #a9ed3b;
+}
+
+.secondary {
+    min-height: 44px;
+
+    padding: 12px 15px;
+
+    background: #26303d;
+    color: var(--text);
+
+    border: 1px solid #3c4755;
+    border-radius: 13px;
+
+    font-size: 13px;
+    font-weight: 750;
+
+    transition:
+        background 0.15s ease,
+        transform 0.12s ease;
+}
+
+.secondary:active {
+    background: #344253;
+    transform: scale(0.98);
+}
+
+.mini {
+    padding: 7px;
+
+    border: none;
+    background: transparent;
+
+    color: var(--cyan);
+    font-size: 12px;
+    font-weight: 750;
+}
+
+
+/* ----------------------------------------------------------
+   10. GENERAL CARDS
+---------------------------------------------------------- */
+
+.card {
+    background: var(--card);
+
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+
+    padding: 18px;
+    margin: 12px 0;
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+
+    margin: 28px 0 14px;
+}
+
+.section-title h2 {
+    margin: 0;
+}
+
+
+/* ----------------------------------------------------------
+   11. STATISTICS
+---------------------------------------------------------- */
+
+.statgrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px;
+}
+
+.stat {
+    min-width: 0;
+
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 17px;
+
+    padding: 17px;
+}
+
+.stat .big {
+    margin-top: 12px;
+    color: var(--text);
+}
+
+
+/* ----------------------------------------------------------
+   12. UPCOMING WORKOUTS
+---------------------------------------------------------- */
+
+.workout-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    padding: 14px 0;
+
+    border-bottom: 1px solid var(--line);
+}
+
+.workout-item:last-child {
+    border-bottom: none;
+}
+
+.num {
+    display: grid;
+    place-items: center;
+
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+
+    background: #27313d;
+    border-radius: 10px;
+
+    color: var(--cyan);
+    font-weight: 850;
+}
+
+.workout-item strong {
+    display: block;
+    font-size: 14px;
+}
+
+.workout-item span {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+
+/* ----------------------------------------------------------
+   13. HISTORY
+---------------------------------------------------------- */
+
+.cycle {
+    margin: 18px 0;
+    padding-left: 14px;
+
+    border-left: 3px solid var(--lime);
+}
+
+.cycle h3 {
+    margin: 0 0 6px;
+}
+
+.history-entry {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.history-entry:last-child {
+    border-bottom: none;
+}
+
+.export-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    margin-top: 25px;
+}
+
+.export-actions button {
+    width: 100%;
+}
+
+
+/* ----------------------------------------------------------
+   14. PROGRAM MANAGEMENT
+---------------------------------------------------------- */
+
+.program-title {
+    margin: 12px 0;
+}
+
+.notice {
+    margin: 16px 0;
+    padding: 14px;
+
+    border: 1px solid #4c5336;
+    border-radius: 13px;
+
+    background: #232a21;
+    color: #d5e7ba;
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.import-format {
+    overflow-x: auto;
+
+    padding: 14px;
+    margin: 14px 0;
+
+    border: 1px solid var(--line-light);
+    border-radius: 12px;
+
+    background: var(--card-light);
+    color: var(--cyan);
+
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.upload {
+    display: block;
+    width: 100%;
+
+    margin: 13px 0;
+    padding: 22px;
+
+    border: 1px dashed #65764a;
+    border-radius: 17px;
+
+    background: #1b251d;
+    color: #d9f9b4;
+
+    text-align: center;
+    font-weight: 750;
+
+    cursor: pointer;
+}
+
+.upload:active {
+    background: #253322;
+}
+
+.text-input {
+    display: block;
+    width: 100%;
+
+    padding: 13px;
+    margin: 10px 0;
+
+    background: var(--card-light);
+    color: var(--text);
+
+    border: 1px solid var(--line-light);
+    border-radius: 12px;
+}
+
+textarea.text-input {
+    min-height: 145px;
+    resize: vertical;
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#importStatus {
+    margin-top: 14px;
+}
+
+
+/* ----------------------------------------------------------
+   15. SHARED UTILITIES
+---------------------------------------------------------- */
+
+.empty {
+    padding: 30px 10px;
+
+    color: var(--muted);
+    text-align: center;
+}
+
+.footer-actions {
+    display: flex;
+    gap: 10px;
+
+    margin-top: 15px;
+}
+
+.footer-actions > * {
+    flex: 1;
+}
+
+
+/* ----------------------------------------------------------
+   16. BOTTOM NAVIGATION
+---------------------------------------------------------- */
+
+.tabs {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    z-index: 100;
+
+    display: flex;
+    justify-content: center;
+
+    padding:
+        10px
+        12px
+        calc(10px + var(--safe-bottom));
+
+    background: rgba(16, 21, 29, 0.96);
+
+    border-top: 1px solid #28313d;
+
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+}
+
+.tabs-inner {
+    display: flex;
+
+    width: 100%;
+    max-width: var(--app-width);
+}
+
+.tab {
+    flex: 1;
+
+    min-width: 0;
+    min-height: 55px;
+
+    padding: 7px 0;
+
+    border: none;
+    background: transparent;
+
+    color: #7e8a9b;
+
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.5px;
+
+    text-align: center;
+}
+
+.tab .icon {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 23px;
+    line-height: 1.2;
+}
+
+.tab.active {
+    color: var(--lime);
+}
+
+
+/* ----------------------------------------------------------
+   17. RESPONSIVE DESIGN
+---------------------------------------------------------- */
+
+@media (max-width: 390px) {
+
+    .shell {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .brand {
+        font-size: 24px;
+    }
+
+    .badge {
+        font-size: 9px;
+        padding: 8px 10px;
+    }
+
+    .hero {
+        padding: 19px;
+    }
+
+    .hero h2 {
+        font-size: 25px;
+    }
+
+    .stat {
+        padding: 14px;
+    }
+
+    .eyebrow {
+        letter-spacing: 1.5px;
+    }
+}
+
+@media (min-width: 768px) {
+
+    .shell {
+        padding-top: 45px;
+    }
+
+    .hero {
+        padding: 28px;
+    }
+}
+
+
+/* ----------------------------------------------------------
+   18. ACCESSIBILITY
+---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

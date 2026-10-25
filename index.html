@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- =====================================================
+         BASIC CONFIGURATION
+    ====================================================== -->
+
+    <meta charset="UTF-8" />
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+
+    <title>VOLT | Training</title>
+
+    <meta
+        name="description"
+        content="VOLT Training — Track your strength workouts, log sets and repetitions, monitor progress, and train consistently."
+    />
+
+
+    <!-- =====================================================
+         THEME & APPEARANCE
+    ====================================================== -->
+
+    <meta name="theme-color" content="#101113" />
+
+    <meta name="color-scheme" content="dark" />
+
+
+    <!-- =====================================================
+         iPHONE & iOS PWA CONFIGURATION
+    ====================================================== -->
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    />
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    />
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="VOLT"
+    />
+
+    <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="./icons/apple-touch-icon.png"
+    />
+
+
+    <!-- =====================================================
+         WEB APP MANIFEST
+    ====================================================== -->
+
+    <link
+        rel="manifest"
+        href="./manifest.json"
+    />
+
+
+    <!-- =====================================================
+         APPLICATION ICONS
+    ====================================================== -->
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="192x192"
+        href="./icons/icon-192.png"
+    />
+
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="512x512"
+        href="./icons/icon-512.png"
+    />
+
+
+    <!-- =====================================================
+         STYLESHEETS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="./css/styles.css"
+    />
+
+    <link
+        rel="stylesheet"
+        href="./css/workout.css"
+    />
+
+</head>
+
+<body>
+
+    <!-- ========================================
+         APPLICATION CONTAINER
+    ========================================= -->
+
+    <main class="shell">
+
+        <!-- APP HEADER -->
+        <header class="top">
+
+            <div class="brand">
+                V<i>O</i>LT
+
+                <span class="brand-subtitle">
+                    TRAINING SYSTEM
+                </span>
+            </div>
+
+            <div class="badge">
+                ● LOCAL MODE
+            </div>
+
+        </header>
+
+
+        <!-- ========================================
+             HOME SCREEN
+        ========================================= -->
+
+        <section
+            class="screen active"
+            id="home"
+        >
+
+            <div class="eyebrow">
+                YOUR TRAINING, YOUR PACE
+            </div>
+
+            <h1>
+                Build strength.
+                <br />
+                <span class="accent">
+                    Keep moving.
+                </span>
+            </h1>
+
+            <p>
+                No calendar. No missed days.
+                Just your next workout.
+            </p>
+
+
+            <!-- CURRENT WORKOUT CARD -->
+
+            <div class="hero">
+
+                <div class="row">
+
+                    <span
+                        class="pill"
+                        id="cyclePill"
+                    >
+                        CYCLE 1
+                    </span>
+
+                    <span
+                        class="small muted"
+                        id="dayIndicator"
+                    >
+                        DAY 1 OF 4
+                    </span>
+
+                </div>
+
+                <div class="eyebrow hero-label">
+                    UP NEXT
+                </div>
+
+                <h2 id="nextName">
+                    A — Squat Strength
+                </h2>
+
+                <div
+                    class="small muted"
+                    id="nextInfo"
+                >
+                    7 exercises · Full body
+                </div>
+
+                <!-- WORKOUT PROGRESS INDICATORS -->
+
+                <div
+                    class="dots"
+                    id="dots"
+                ></div>
+
+                <!-- START WORKOUT -->
+
+                <button
+                    class="primary"
+                    id="startWorkoutBtn"
+                    onclick="startWorkout()"
+                >
+                    ▶ START / RESUME WORKOUT
+                </button>
+
+            </div>
+
+
+            <!-- TRAINING STATISTICS -->
+
+            <div class="statgrid">
+
+                <div class="stat">
+
+                    <div class="eyebrow">
+                        CYCLES FINISHED
+                    </div>
+
+                    <div
+                        class="big"
+                        id="cyclesDone"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+                <div class="stat">
+
+                    <div class="eyebrow">
+                        WORKOUTS LOGGED
+                    </div>
+
+                    <div
+                        class="big"
+                        id="workoutsDone"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- UPCOMING WORKOUTS -->
+
+            <div class="section-title">
+
+                <h2>
+                    Coming up
+                </h2>
+
+                <span class="small muted">
+                    In rotation
+                </span>
+
+            </div>
+
+            <div
+                class="card"
+                id="upcoming"
+            ></div>
+
+        </section>
+
+
+
+        <!-- ========================================
+             ACTIVE WORKOUT SCREEN
+        ========================================= -->
+
+        <section
+            class="screen"
+            id="workout"
+        >
+
+            <!--
+                The workout interface is dynamically
+                generated by workouts.js.
+
+                It will display:
+
+                - Current exercise
+                - Current set
+                - Suggested weight
+                - Editable weight and repetitions
+                - Complete Set button
+                - Rest timer
+                - Next Exercise button
+                - Collapsible workout overview
+
+                Only one exercise is shown at a time.
+            -->
+
+            <div id="focusRoot"></div>
+
+        </section>
+
+
+
+        <!-- ========================================
+             HISTORY SCREEN
+        ========================================= -->
+
+        <section
+            class="screen"
+            id="history"
+        >
+
+            <div class="eyebrow">
+                THE LONG GAME
+            </div>
+
+            <h1>
+                Training
+                <span class="accent">
+                    history.
+                </span>
+            </h1>
+
+
+            <!-- HISTORY STATISTICS -->
+
+            <div class="statgrid">
+
+                <div class="stat">
+
+                    <div class="eyebrow">
+                        WORKOUTS
+                    </div>
+
+                    <div
+                        class="big"
+                        id="historyCount"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+                <div class="stat">
+
+                    <div class="eyebrow">
+                        FULL CYCLES
+                    </div>
+
+                    <div
+                        class="big"
+                        id="historyCycles"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- COMPLETED CYCLES -->
+
+            <div class="section-title">
+                <h2>
+                    Completed cycles
+                </h2>
+            </div>
+
+            <div id="cycleHistory"></div>
+
+
+            <!-- WORKOUT LOG -->
+
+            <div class="section-title">
+                <h2>
+                    Workout log
+                </h2>
+            </div>
+
+            <div id="historyList"></div>
+
+
+            <!-- DATA EXPORT -->
+
+            <div class="export-actions">
+
+                <button
+                    class="secondary"
+                    id="exportCsvBtn"
+                    onclick="exportCSV()"
+                >
+                    ↓ Export Workout CSV
+                </button>
+
+                <button
+                    class="secondary"
+                    id="exportJsonBtn"
+                    onclick="exportJSON()"
+                >
+                    ↓ Export Full JSON Backup
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ========================================
+             PROGRAM MANAGEMENT SCREEN
+        ========================================= -->
+
+        <section
+            class="screen"
+            id="programs"
+        >
+
+            <div class="eyebrow">
+                YOUR TRAINING BLUEPRINT
+            </div>
+
+            <h1>
+                Program
+                <span class="accent">
+                    studio.
+                </span>
+            </h1>
+
+
+            <!-- ACTIVE PROGRAM -->
+
+            <div class="card">
+
+                <div class="eyebrow">
+                    ACTIVE PROGRAM
+                </div>
+
+                <h2
+                    class="program-title"
+                    id="programName"
+                >
+                    Flexible Full-Body Rotation
+                </h2>
+
+                <p id="programMeta">
+                    4 rotating days
+                </p>
+
+                <div class="notice">
+                    Uploading a replacement program starts
+                    its rotation at Day 1. Your completed
+                    workout history is preserved.
+                </div>
+
+            </div>
+
+
+            <!-- BULK PROGRAM IMPORT -->
+
+            <div class="section-title">
+                <h2>
+                    Bulk import
+                </h2>
+            </div>
+
+            <p>
+                Upload a CSV file or paste your program
+                using the following columns:
+            </p>
+
+            <div class="import-format">
+                Day, Exercise, Sets, Reps, Rest, Type, Notes
+            </div>
+
+            <p class="small muted">
+                Repetition ranges such as 8-12 are supported.
+                Alternative exercises can use "or".
+            </p>
+
+
+            <!-- CSV FILE UPLOAD -->
+
+            <label
+                class="upload"
+                for="csvFile"
+            >
+
+                ＋ Choose a CSV File
+
+                <input
+                    id="csvFile"
+                    type="file"
+                    accept=".csv,text/csv"
+                    hidden
+                    onchange="loadCSV(event)"
+                />
+
+            </label>
+
+
+            <!-- PASTE PROGRAM -->
+
+            <textarea
+                class="text-input"
+                id="csvText"
+                placeholder="Day,Exercise,Sets,Reps,Rest,Type,Notes&#10;A,Barbell Squat,3-4,5-8,120,reps,Main lift&#10;A,Dead Hang,3,30-45,60,time,Seconds"
+            ></textarea>
+
+
+            <!-- IMPORT BUTTON -->
+
+            <button
+                class="secondary full-width"
+                id="importProgramBtn"
+                onclick="importProgram()"
+            >
+                Preview & Import Program
+            </button>
+
+
+            <!-- IMPORT FEEDBACK -->
+
+            <div id="importStatus"></div>
+
+
+
+            <!-- ========================================
+                 CURRENT PROGRAM DETAILS
+            ========================================= -->
+
+            <div class="section-title">
+                <h2>
+                    Program exercises
+                </h2>
+            </div>
+
+            <div id="programDetails"></div>
+
+
+
+            <!-- ========================================
+                 BACKUP AND RESTORE
+            ========================================= -->
+
+            <div class="section-title">
+                <h2>
+                    Backup & Restore
+                </h2>
+            </div>
+
+
+            <!-- DOWNLOAD BACKUP -->
+
+            <button
+                class="secondary full-width"
+                id="backupBtn"
+                onclick="exportJSON()"
+            >
+                ↓ Download Full Backup
+            </button>
+
+
+            <!-- RESTORE BACKUP -->
+
+            <label
+                class="upload"
+                for="restoreFile"
+            >
+
+                ↑ Restore JSON Backup
+
+                <input
+                    id="restoreFile"
+                    type="file"
+                    accept=".json,application/json"
+                    hidden
+                    onchange="restoreBackup(event)"
+                />
+
+            </label>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- ========================================
+         BOTTOM NAVIGATION
+    ========================================= -->
+
+    <nav
+        class="tabs"
+        aria-label="Main navigation"
+    >
+
+        <div class="tabs-inner">
+
+            <!-- HOME -->
+
+            <button
+                class="tab active"
+                data-tab="home"
+                onclick="showTab('home')"
+            >
+
+                <span class="icon">
+                    ⌂
+                </span>
+
+                <span>
+                    HOME
+                </span>
+
+            </button>
+
+
+            <!-- WORKOUT -->
+
+            <button
+                class="tab"
+                data-tab="workout"
+                onclick="showTab('workout')"
+            >
+
+                <span class="icon">
+                    ◉
+                </span>
+
+                <span>
+                    WORKOUT
+                </span>
+
+            </button>
+
+
+            <!-- HISTORY -->
+
+            <button
+                class="tab"
+                data-tab="history"
+                onclick="showTab('history')"
+            >
+
+                <span class="icon">
+                    ▥
+                </span>
+
+                <span>
+                    HISTORY
+                </span>
+
+            </button>
+
+
+            <!-- PROGRAMS -->
+
+            <button
+                class="tab"
+                data-tab="programs"
+                onclick="showTab('programs')"
+            >
+
+                <span class="icon">
+                    ☷
+                </span>
+
+                <span>
+                    PROGRAMS
+                </span>
+
+            </button>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- ========================================
+         JAVASCRIPT
+    ========================================= -->
+
+    <script type="module" src="./js/app.js"></script>
+
+</body>
+</html>
