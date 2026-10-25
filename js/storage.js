@@ -38,7 +38,7 @@ function createDefaultState() {
 
         history: [],
 
-        plannerEntries[],
+        plannerEntries: [],
 
         settings: {
             defaultRest: 90,
